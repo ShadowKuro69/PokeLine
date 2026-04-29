@@ -4,7 +4,7 @@ from rich.panel import Panel
 from rich.text import Text
 from PIL import Image
 import io
-
+from PIL import ImageFilter, ImageEnhance
 console = Console()
 
 def get_evolution_chain(name):
@@ -22,31 +22,37 @@ def get_evolution_chain(name):
      return evolutions
         
 
-def show_pokemon_art(sprite_url):
+def show_pokemon_art(sprite_url):   
+    from PIL import ImageEnhance
     response = requests.get(sprite_url)
     img = Image.open(io.BytesIO(response.content)).convert("RGBA")
-    img = img.resize((32, 32))
-    for y in range(img.height):
+    img = img.resize((60, 60), Image.LANCZOS)
+    img = ImageEnhance.Contrast(img).enhance(1.4)
+    img = ImageEnhance.Sharpness(img).enhance(1.8)
+    for y in range(0, img.height - 1, 2):
         row = ""
         for x in range(img.width):
-            r, g, b, a = img.getpixel((x, y))
-            if a < 128:
-                row += "  "
+            r1, g1, b1, a1 = img.getpixel((x, y))
+            r2, g2, b2, a2 = img.getpixel((x, y + 1))
+            if a1 < 128 and a2 < 128:
+                row += " "
             else:
-                row += f"[rgb({r},{g},{b})]██[/rgb({r},{g},{b})]"
+                top = f"rgb({r1},{g1},{b1})" if a1 >= 128 else "black"
+                bottom = f"rgb({r2},{g2},{b2})" if a2 >= 128 else "black"
+                row += f"[{top} on {bottom}]▀[/]"
         console.print(row)
-
 def get_pokemon(name):
 
-    url = f"https://pokeapi.co/api/v2/pokemon/{name.lower()}"
+    url = f"https://pokeapi.co/api/v2/pokemon/{name.lower()}" 
     response = requests.get(url)
     if response.status_code == 404:
         console.print("[bold red]Pokemon not found![/bold red]")
         return
-    data =  response.json()
+    data =  response.json() 
+    
     sprite = data["sprites"]["other"]["official-artwork"]["front_default"]
     if sprite:
-         show_pokemon_art(sprite)
+        show_pokemon_art(sprite)
 
     console.print(f"\n[bold yellow]{data['name'].upper()}[/bold yellow]")
     console.print(f"[cyan]Base XP:[/cyan] {data['base_experience']}")
@@ -62,4 +68,4 @@ while True:
     name = input("Enter a Pokemon name: ")
     if name == "quit":
         break
-    get_pokemon(name) 
+    get_pokemon(name)    

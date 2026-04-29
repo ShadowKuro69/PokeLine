@@ -4,6 +4,7 @@ from rich.live import Live
 from PIL import Image, ImageEnhance
 import io
 import time
+from rich.panel import Panel
 
 console = Console()
 
@@ -24,14 +25,14 @@ def get_evolution_chain(name):
 def get_pokemon_art(sprite_url, padding=0):
     response = requests.get(sprite_url)
     img = Image.open(io.BytesIO(response.content)).convert("RGBA")
-    img = img.resize((48, 40), Image.LANCZOS)
+    img = img.resize((38, 30), Image.LANCZOS)
     img = ImageEnhance.Contrast(img).enhance(1.4)
     img = ImageEnhance.Sharpness(img).enhance(1.8)
     CHARS = " ░▒▓█"
-    lines = "\n" * padding
+    lines = "\n" * padding  
     for y in range(img.height):
         row = ""
-        for x in range(img.width):
+        for x in range(img.width):  
             r, g, b, a = img.getpixel((x, y))
             if a < 128:
                 row += "  "
@@ -54,20 +55,60 @@ def get_pokemon(name):
     if sprite:
         console.print(get_pokemon_art(sprite))
 
-    console.print(f"\n[bold yellow]{data['name'].upper()}[/bold yellow]")
-    console.print(f"[cyan]Base XP:[/cyan] {data['base_experience']}")
-
-    for t in data["types"]:
-        console.print(f"[green]Type:[/green] {t['type']['name']}")
-
     evos = get_evolution_chain(name)
-    console.print(f"[bold blue]Evolutions:[/bold blue] {' → '.join(evos)}")
+    display_pokemon_panel(data, evos)
+def test_panel():
+    panel = Panel(
+        "This is my first pokedex panel",
+        title="POKEDEX",
+        border_style="blue"
+    )
 
-    for stat in data["stats"]:
-        console.print(f"[magenta]{stat['stat']['name']}[/magenta] : {stat['base_stat']}")
+    console.print(panel) 
+
+
+def display_pokemon_panel(data, evolutions):
+    name = data["name"].upper()
+    xp = data["base_experience"]
+
+    types = ", ".join(
+        [t["type"]["name"].capitalize() for t in data["types"]]
+    )
+
+    evo_text = " → ".join(
+        [e.capitalize() for e in evolutions]
+    )
+
+    stats = "\n".join([
+        f"{stat['stat']['name'].capitalize():15} : {stat['base_stat']}"
+        for stat in data["stats"]
+    ])
+
+    content = f"""
+    [bold yellow]{name}[/bold yellow]
+
+
+    [cyan]Base XP:[/cyan] {xp}
+    [green]Type:[/green] {types}
+    [bold blue]Evolution Line:[/bold blue] {evo_text}
+
+    [bold magenta]Stats[/bold magenta]
+    {stats}
+    """
+
+        
+    panel = Panel(
+        content,
+        title="[bold red]POKEDEX[/bold red]",
+        border_style="bright_blue",
+        expand=False
+    )
+          
+    console.print(panel)
+
 
 while True:
     name = input("\nEnter a Pokemon name: ")
     if name == "quit":
         break
-    get_pokemon(name)  
+    get_pokemon(name) 

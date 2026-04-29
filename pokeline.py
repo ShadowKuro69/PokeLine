@@ -66,6 +66,29 @@ def test_panel():
 
     console.print(panel) 
 
+def get_pokedex_entry(name):
+    url = f"https://pokeapi.co/api/v2/pokemon-species/{name.lower()}"
+    response = requests.get(url)
+
+    if response.status_code !=200:
+        return "No Pokedex entry found"
+    data = response.json()
+
+    for entry in data["flavor_text_entries"]:
+        if entry["language"]["name"] == "en":
+            text = entry["flavor_text"]
+            text = text.replace("\n", " ").replace("\f", " ")
+            return text
+        
+    return "No Pokedex entry found"
+
+def make_stat_bar(value, max_value=255):
+    filled = int((value / max_value) * 20)
+    empty = 20 - filled
+
+    bar = "█" * filled + "░" * empty
+    return bar
+
 
 def display_pokemon_panel(data, evolutions):
     name = data["name"].upper()
@@ -80,20 +103,27 @@ def display_pokemon_panel(data, evolutions):
     )
 
     stats = "\n".join([
-        f"{stat['stat']['name'].capitalize():15} : {stat['base_stat']}"
+        f"{stat['stat']['name'].capitalize():15} "
+        f"{make_stat_bar(stat['base_stat'])} "
+        f"{stat['base_stat']}"
         for stat in data["stats"]
     ])
+
+    pokedex_entry = get_pokedex_entry(data["name"])
 
     content = f"""
     [bold yellow]{name}[/bold yellow]
 
 
-    [cyan]Base XP:[/cyan] {xp}
+    [cyan]Base XP:[/cyan] {xp} 
     [green]Type:[/green] {types}
     [bold blue]Evolution Line:[/bold blue] {evo_text}
 
     [bold magenta]Stats[/bold magenta]
     {stats}
+    
+    [bold white]Pokedex Entry[/bold white]
+    "{pokedex_entry}"
     """
 
         

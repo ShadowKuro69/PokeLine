@@ -85,27 +85,25 @@ def get_pokedex_entry(name):
 def make_stat_bar(value, max_value=255):
     filled = int((value / max_value) * 20)
     empty = 20 - filled
-
-    bar = "█" * filled + "░" * empty
+    full = "\u2588"
+    empty_char = "\u2591"
+    bar = "[green]" + full * filled + "[/green]" + "[dim]" + empty_char * empty + "[/dim]"
     return bar
 
 
 def display_pokemon_panel(data, evolutions):
     name = data["name"].upper()
     xp = data["base_experience"]
-
     types = ", ".join(
         [t["type"]["name"].capitalize() for t in data["types"]]
     )
 
-    evo_text = " → ".join(
-        [e.capitalize() for e in evolutions]
+    evo_text = " → ".join( 
+        [e.capitalize() for e in evolutions] 
     )
 
     stats = "\n".join([
-        f"{stat['stat']['name'].capitalize():15} "
-        f"{make_stat_bar(stat['base_stat'])} "
-        f"{stat['base_stat']}"
+        f"[cyan]{stat['stat']['name'].capitalize():15}[/cyan] {make_stat_bar(stat['base_stat'])} {stat['base_stat']}"
         for stat in data["stats"]
     ])
 

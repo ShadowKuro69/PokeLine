@@ -91,19 +91,19 @@ def make_stat_bar(value, max_value=255):
     return bar
 
 
-def get_type_weaknessess(types):
-    weaknessess = {}
+def get_type_weaknesses(types):
+    weaknesses = {}
     for t in types:
         url = f"https://pokeapi.co/api/v2/type/{t}"
         data = requests.get(url).json()
         relations = data["damage_relations"]
         for weak in relations["double_damage_from"]:
-            weaknessess[weak["name"]] = weaknessess.get(weak["name"], 1) * 2
+            weaknesses[weak["name"]] = weaknesses.get(weak["name"], 1) * 2
         for resist in relations["half_damage_from"]:
-            weaknessess[resist["name"]] = weaknessess.get(resist["name"], 1) * 0.5
+            weaknesses[resist["name"]] = weaknesses.get(resist["name"], 1) * 0.5
         for immune in relations["no_damage_from"]:
-            weaknessess[immune["name"]] = 0
-    return weaknessess
+            weaknesses[immune["name"]] = 0
+    return weaknesses
 
 
 def display_pokemon_panel(data, evolutions):
@@ -113,14 +113,14 @@ def display_pokemon_panel(data, evolutions):
         [t["type"]["name"].capitalize() for t in data["types"]]
     )
     type_list = [t["type"]["name"] for t in data["types"]]
-    weaknessess = get_type_weaknessess(type_list)
+    weaknesses = get_type_weaknesses(type_list)
     weak_text = " ".join([
         f"[red]{t}(x{v})[/red]" if v >= 2 else f"[green]{t}(x{v})[/green]"
-        for t, v in weaknessess.items() if v != 1
+        for t, v in weaknesses.items() if v != 1
         ])
     
     evo_text = " → ".join( 
-        [e.capitalize() for e in evolutions] 
+        [e.capitalize() for e in evolutions]
     )
 
     stats = "\n".join([
@@ -133,7 +133,7 @@ def display_pokemon_panel(data, evolutions):
     content = f"""
     [bold yellow]{name}[/bold yellow]
 
-    [bold red]Weaknessess:[/bold red] {weak_text}
+    [bold red]weaknesses:[/bold red] {weak_text}
     [cyan]Base XP:[/cyan] {xp} 
     [green]Type:[/green] {types}
     [bold blue]Evolution Line:[/bold blue] {evo_text}

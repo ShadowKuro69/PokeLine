@@ -155,9 +155,11 @@ def display_pokemon_panel(data, evolutions):
           
     console.print(panel)
 
-
-while True:
-    name = input("\nEnter a Pokemon name: ")
-    if name == "quit":
-        break
-    get_pokemon(name) 
+def main():
+    while True:
+        name = input("\nEnter a Pokemon name: ")
+        if name == "quit":
+            break
+        get_pokemon(name) 
+if __name__ == "__main__":
+    main()

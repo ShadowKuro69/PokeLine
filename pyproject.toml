@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pokeline"
+version = "1.0.0"
+description = "A terminal Pokedex built in Python"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "requests",
+    "rich",
+    "pillow"
+]
+
+[project.scripts]
+pokeline = "pokeline:main"
+

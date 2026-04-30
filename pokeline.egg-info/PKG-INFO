@@ -1,0 +1,26 @@
+Metadata-Version: 2.4
+Name: pokeline
+Version: 1.0.0
+Summary: A terminal Pokedex built in Python
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: requests
+Requires-Dist: rich
+Requires-Dist: pillow
+
+# PokeLine 🔴
+
+A terminal Pokédex built in Python. Search any Pokémon and get their stats, types, evolution chain, weaknesses, and Pokédex entry, all in your terminal along with its colored art.
+
+## Features
+- Colored Unicode art for every Pokémon
+- Stats with visual bars
+- Type weaknesses
+- Evolution chain
+- English Pokédex entries
+
+## Installation
+pip install requests rich pillow
+
+## Usage
+python pokeline.py

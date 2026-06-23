@@ -11,6 +11,7 @@ A terminal Pokédex built in Python. Search any Pokémon and get their stats, ty
 
 ## Installation
 pip install requests rich pillow
+checkout pypi pokeline for more info
 
 ## Usage
 python pokeline.py
